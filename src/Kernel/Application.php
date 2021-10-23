@@ -68,59 +68,23 @@ class Application
         }
     }
 
-    /**
-     * 网络请求
-     * @param $url
-     * @param array $query
-     * @param bool $auth
-     * @return string
-     * @throws GuzzleException
-     */
-    public function get($url, $query = [], $auth = true)
-    {
-        return $this->request('GET', $url, $query, [], $auth);
-    }
-
-    public function post($url, $params = [], $auth = true)
-    {
-        return $this->request('POST', $url, [], $params, $auth);
-    }
-
-    public function patch($url, $params = [], $auth = true)
-    {
-        return $this->request('PATCH', $url, [], $params, $auth);
-    }
-
-    public function delete($url, $params = [], $auth = true)
-    {
-        return $this->request('DELETE', $url, [], $params, $auth);
-    }
-
-    /**
-     * 转化输出 JSON
-     * @param $url
-     * @param array $query
-     * @param bool $auth
-     * @return mixed
-     * @throws GuzzleException
-     */
     public function getJson($url, $query = [], $auth = true)
     {
-        return json_decode($this->get($url, $query, $auth));
+        return json_decode($this->request('GET', $url, $query, [], $auth));
     }
 
     public function postJson($url, $params = [], $auth = true)
     {
-        return json_decode($this->post($url, $params, $auth));
+        return json_decode($this->request('POST', $url, [], $params, $auth));
     }
 
     public function patchJson($url, $params = [], $auth = true)
     {
-        return json_decode($this->patch($url, $params, $auth));
+        return json_decode($this->request('PATCH', $url, [], $params, $auth));
     }
 
     public function deleteJson($url, $params = [], $auth = true)
     {
-        return json_decode($this->delete($url, $params, $auth));
+        return json_decode($this->request('DELETE', $url, [], $params, $auth));
     }
 }
