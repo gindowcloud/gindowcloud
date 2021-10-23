@@ -8,7 +8,7 @@ use GindowCloud\Containers\Settings\Settings;
 use GindowCloud\Containers\Sms\Sms;
 use Illuminate\Support\ServiceProvider;
 
-class GindowProvider extends ServiceProvider
+class Provider extends ServiceProvider
 {
     protected $defer = true;
 
