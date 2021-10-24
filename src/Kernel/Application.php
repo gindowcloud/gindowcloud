@@ -38,20 +38,18 @@ class Application
      * 网络请求 Request
      * @param $method
      * @param $url
-     * @param array $query
-     * @param array $params
+     * @param array $options
      * @param bool $auth
      * @return string
      * @throws GuzzleException
      */
-    public function request($method, $url, $query = [], $params = [], $auth = false)
+    public function request($method, $url, $options = [], $auth = false)
     {
         if ($auth & !$this->token) {
             $this->token = $this->getToken();
         }
         try {
             $url = $this->url . (substr($url, 0, 1) == '/' ? '' : '/') . $url;
-            $options = ['query' => $query, 'form_params' => $params];
             if ($auth) {
                 $options['headers'] = [
                     'Accept' => 'application/json',
@@ -70,21 +68,26 @@ class Application
 
     public function getJson($url, $query = [], $auth = true)
     {
-        return json_decode($this->request('GET', $url, $query, [], $auth));
+        return json_decode($this->request('GET', $url, ['query' => $query], $auth));
     }
 
-    public function postJson($url, $params = [], $auth = true)
+    public function postJson($url, $formParams = [], $auth = true)
     {
-        return json_decode($this->request('POST', $url, [], $params, $auth));
+        return json_decode($this->request('POST', $url, ['form_params' => $formParams], $auth));
     }
 
-    public function patchJson($url, $params = [], $auth = true)
+    public function patchJson($url, $formParams = [], $auth = true)
     {
-        return json_decode($this->request('PATCH', $url, [], $params, $auth));
+        return json_decode($this->request('PATCH', $url, ['form_params' => $formParams], $auth));
     }
 
-    public function deleteJson($url, $params = [], $auth = true)
+    public function deleteJson($url, $formParams = [], $auth = true)
     {
-        return json_decode($this->request('DELETE', $url, [], $params, $auth));
+        return json_decode($this->request('DELETE', $url, ['form_params' => $formParams], $auth));
+    }
+
+    public function uploadJson($url, $multipart = [], $auth = true)
+    {
+        return json_decode($this->request('POST', $url, ['multipart' => $multipart], $auth));
     }
 }

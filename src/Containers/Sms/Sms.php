@@ -8,11 +8,12 @@ class Sms extends Application
 {
     public function send($phone, $content, $template = null, $data = null)
     {
-        return $this->postJson('/sms', [
+        $json = $this->postJson('sms', [
             'phone' => $phone,
             'content' => $content,
             'template' => $template,
             'data' => $data,
         ]);
+        return 200 == $json->code;
     }
 }

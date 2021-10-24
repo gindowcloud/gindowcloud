@@ -23,6 +23,7 @@ $ php artisan vendor:publish --provider="GindowCloud\Provider"
 use GindowCloud\Facades\Settings;
 use GindowCloud\Facades\Sms;
 use GindowCloud\Facades\Captcha;
+use GindowCloud\Facades\Asset;
 
 // Settings
 Settings::set('site_name', 'My Site');
@@ -35,4 +36,7 @@ Sms::send('13966668888', 'Hello World');
 // Authentication
 Captcha::send('13966668888');
 Captcha::check('13966668888', '1234');
+
+// Asset
+Asset::upload($file);
 ```

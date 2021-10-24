@@ -2,6 +2,7 @@
 
 namespace GindowCloud;
 
+use GindowCloud\Containers\Asset\Asset;
 use GindowCloud\Containers\Authentication\Captcha;
 use GindowCloud\Containers\Product\Category;
 use GindowCloud\Containers\Settings\Settings;
@@ -11,6 +12,14 @@ use Illuminate\Support\ServiceProvider;
 class Provider extends ServiceProvider
 {
     protected $defer = true;
+    protected $classes = [
+        'gindow' => Gindow::class,
+        'gindow.settings' => Settings::class,
+        'gindow.sms' => Sms::class,
+        'gindow.category' => Category::class,
+        'gindow.captcha' => Captcha::class,
+        'gindow.asset' => Asset::class,
+    ];
 
     public function boot()
     {
@@ -24,14 +33,7 @@ class Provider extends ServiceProvider
      */
     public function register()
     {
-        $classes = [
-            'gindow' => Gindow::class,
-            'gindow.settings' => Settings::class,
-            'gindow.sms' => Sms::class,
-            'gindow.category' => Category::class,
-            'gindow.captcha' => Captcha::class,
-        ];
-        foreach ($classes as $name => $class) {
+        foreach ($this->classes as $name => $class) {
             $this->app->singleton($name, function ($app) use ($class) {
                 return new $class($app['session'], $app['config']);
             });
@@ -44,12 +46,6 @@ class Provider extends ServiceProvider
      */
     public function provides()
     {
-        return [
-            'gindow',
-            'gindow.settings',
-            'gindow.sms',
-            'gindow.category',
-            'gindow.captcha',
-        ];
+        return collect($this->classes)->keys()->toArray();
     }
 }
