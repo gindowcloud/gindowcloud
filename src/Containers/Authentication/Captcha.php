@@ -8,19 +8,17 @@ class Captcha extends Application
 {
     public function send($phone, $content = null)
     {
-        $json = $this->postJson('captcha', [
+        return 200 == $this->httpPost('captcha', [
             'phone' => $phone,
             'content' => $content
-        ]);
-        return 200 == $json->code;
+        ])->json()->code;
     }
 
     public function check($phone, $captcha)
     {
-        $json = $this->postJson('captcha/check', [
+        return 200 == $this->httpPost('captcha/check', [
             'phone' => $phone,
             'captcha' => $captcha
-        ]);
-        return 200 == $json->code;
+        ])->json()->code;
     }
 }

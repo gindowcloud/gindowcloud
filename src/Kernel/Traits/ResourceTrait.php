@@ -6,26 +6,26 @@ trait ResourceTrait
 {
     public function index($para = [])
     {
-        return $this->getJson($this->resource, $para);
+        return $this->httpGet($this->resource, $para);
     }
 
     public function show($id)
     {
-        return $this->getJson($this->resource . '/' . $id);
+        return $this->httpGet($this->resource . '/' . $id);
     }
 
     public function store($para)
     {
-        return $this->postJson($this->resource, $para);
+        return $this->httpPost($this->resource, $para);
     }
 
     public function update($id, $para)
     {
-        return $this->patchJson($this->resource . '/' . $id, $para);
+        return $this->httpPatch($this->resource . '/' . $id, $para);
     }
 
     public function destroy($id)
     {
-        return $this->deleteJson($this->resource . '/' . $id);
+        return $this->httpDelete($this->resource . '/' . $id);
     }
 }

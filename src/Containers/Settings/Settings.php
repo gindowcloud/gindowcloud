@@ -14,11 +14,13 @@ class Settings extends Application
     public function all()
     {
         $data = [];
-        $json = $this->getJson('settings', [
+        $json = $this->httpGet('settings', [
             'size' => 100
-        ]);
-        foreach ($json->data as $item) {
-            $data[$item->key] = $item->value;
+        ])->json();
+        if ($json->code == 200) {
+            foreach ($json->data as $item) {
+                $data[$item->key] = $item->value;
+            }
         }
         return $data;
     }
@@ -32,7 +34,7 @@ class Settings extends Application
     public function get($key, $default = null)
     {
         $value = Cache::remember($this->cacheKey($key), $this->cacheSecond, function () use ($key) {
-            $json = $this->getJson('config/' . $key);
+            $json = $this->httpGet('config/' . $key)->json();
             return $json->data ? $json->data->value ?? null : null;
         });
         return $value ?? $default;
@@ -46,7 +48,7 @@ class Settings extends Application
      */
     public function set($key, $value)
     {
-        $this->postJson('config/' . $key, ['value' => $value]);
+        $this->httpPost('config/' . $key, ['value' => $value]);
         return $this->cacheForget($key);
     }
     /**

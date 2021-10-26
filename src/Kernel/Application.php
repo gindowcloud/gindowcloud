@@ -26,10 +26,10 @@ class Application
     private function getToken()
     {
         return Cache::remember($this->cacheToken, $this->cacheSecond, function () {
-            $json = $this->postJson('/token', [
+            $json = $this->httpPost('/token', [
                 'app_id' => $this->clientId,
                 'secret' => $this->clientSecret,
-            ], false);
+            ], false)->json();
             return $json->data->access_token;
         });
     }
@@ -41,9 +41,8 @@ class Application
      * @param array $options
      * @param bool $auth
      * @return string
-     * @throws GuzzleException
      */
-    public function request($method, $url, $options = [], $auth = false)
+    protected function request($method, $url, $options = [], $auth = false)
     {
         if ($auth & !$this->token) {
             $this->token = $this->getToken();
@@ -56,38 +55,38 @@ class Application
                     'Authorization' => 'Bearer ' . $this->token,
                 ];
             }
-            $ret = (new Client)->request($method, $url, $options);
-            return $ret->getBody()->getContents();
-        } catch (\Exception $e) {
+            $response = (new Client)->request($method, $url, $options);
+            return new Response($response->getBody());
+        } catch (GuzzleException $e) {
             if (401 == $e->getCode()) {
                 Cache::forget($this->cacheToken);
             }
-            return $e->getResponse()->getBody()->getContents();
+            return new Response($e->getResponse()->getBody());
         }
     }
 
-    public function getJson($url, $query = [], $auth = true)
+    protected function httpGet($url, $query = [], $auth = true)
     {
-        return json_decode($this->request('GET', $url, ['query' => $query], $auth));
+        return $this->request('GET', $url, ['query' => $query], $auth);
     }
 
-    public function postJson($url, $formParams = [], $auth = true)
+    protected function httpPost($url, $formParams = [], $auth = true)
     {
-        return json_decode($this->request('POST', $url, ['form_params' => $formParams], $auth));
+        return $this->request('POST', $url, ['form_params' => $formParams], $auth);
     }
 
-    public function patchJson($url, $formParams = [], $auth = true)
+    protected function httpPatch($url, $formParams = [], $auth = true)
     {
-        return json_decode($this->request('PATCH', $url, ['form_params' => $formParams], $auth));
+        return $this->request('PATCH', $url, ['form_params' => $formParams], $auth);
     }
 
-    public function deleteJson($url, $formParams = [], $auth = true)
+    protected function httpDelete($url, $formParams = [], $auth = true)
     {
-        return json_decode($this->request('DELETE', $url, ['form_params' => $formParams], $auth));
+        return $this->request('DELETE', $url, ['form_params' => $formParams], $auth);
     }
 
-    public function uploadJson($url, $multipart = [], $auth = true)
+    protected function httpUpload($url, $multipart = [], $auth = true)
     {
-        return json_decode($this->request('POST', $url, ['multipart' => $multipart], $auth));
+        return $this->request('POST', $url, ['multipart' => $multipart], $auth);
     }
 }

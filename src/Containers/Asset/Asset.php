@@ -6,12 +6,29 @@ use GindowCloud\Kernel\Application;
 
 class Asset extends Application
 {
-    public function upload($file)
+    public function upload($typeId, $file, $extension)
     {
-        $json = $this->uploadJson('assets', [
-            ['name' => 'type_id', 'contents' => 'IMAGE'],
+        return $this->httpUpload('assets', [
+            ['name' => 'type_id', 'contents' => $typeId],
             ['name' => 'file', 'contents' => fopen($file, 'r')],
+            ['name' => 'extension', 'contents' => $extension],
         ]);
-        return 200 == $json->code ? $json->data->url : null;
+    }
+
+    public function uploadImage($file, $extension = null)
+    {
+        $extension = $this->parseExtension($file, $extension);
+        return $this->upload('IMAGE', $file, $extension ?? 'jpg');
+    }
+
+    public function uploadAvatar($file, $extension = null)
+    {
+        $extension = $this->parseExtension($file, $extension);
+        return $this->upload('AVATAR', $file, $extension ?? 'jpg');
+    }
+
+    private function parseExtension($file, $extension)
+    {
+        return $extension || !is_string($file) ? $extension : pathinfo($file)['extension'] ?? null;
     }
 }
